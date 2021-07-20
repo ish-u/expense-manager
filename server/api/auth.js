@@ -42,25 +42,30 @@ router.post("/signup", async (req, res) => {
   const email = req.body.email;
 
   // checking if the user already exists
-
-  // creating encyrpted password
-  const salt = await bcrypt.genSalt(10);
-  const encryptedPassword = await bcrypt.hash(password, salt);
-
-  // Creating a new User Document
-  const user = new User({
-    name: name,
-    username: username,
-    password: encryptedPassword,
-    email: email,
-  });
-
-  // saving the new User Document
-  await user.save((err, data) => {
-    if (err) {
+  User.findOne({ username: username }, async (err, data) => {
+    if (err || data !== null) {
       res.sendStatus(701);
     } else {
-      res.sendStatus(200);
+      // creating encyrpted password
+      const salt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(password, salt);
+
+      // Creating a new User Document
+      const user = new User({
+        name: name,
+        username: username,
+        password: encryptedPassword,
+        email: email,
+      });
+
+      // saving the new User Document
+      await user.save((err, data) => {
+        if (err) {
+          res.sendStatus(701);
+        } else {
+          res.sendStatus(200);
+        }
+      });
     }
   });
 });
