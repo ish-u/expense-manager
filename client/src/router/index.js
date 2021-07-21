@@ -49,7 +49,6 @@ const router = new VueRouter({
   routes,
 });
 
-export default router;
 // authentication middleware using Navigation Guards
 router.beforeEach((to, from, next) => {
   const publicPages = ["Sign In", "Sign Up"];
@@ -62,3 +61,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
+export default router;

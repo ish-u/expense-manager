@@ -1,12 +1,11 @@
 <template>
-  <b-container>
+  <b-container class="text-center">
     <h1 class="display-1">Sign In</h1>
     <b-container class="pt-5">
       <b-form @submit.prevent="signin" class="signin-form">
         <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
           {{ alertMessage }}
         </b-alert>
-
         <b-form-group>
           <b-form-input
             name="username"
@@ -14,6 +13,7 @@
             placeholder="username"
             v-model="username"
             required
+            autofocus
           ></b-form-input>
         </b-form-group>
         <b-form-group>
@@ -64,6 +64,6 @@ export default {
 <style>
 .signin-form {
   margin: 0 auto;
-  width: 50vw;
+  width: 25vw;
 }
 </style>

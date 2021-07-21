@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavBar />
-    <b-container fluid class="p-5">
+    <b-container fluid class="p-3">
       <router-view />
     </b-container>
   </div>
@@ -14,9 +14,3 @@ export default {
   },
 };
 </script>
-
-<style>
-#app {
-  text-align: center;
-}
-</style>
