@@ -10,7 +10,6 @@
       cancel-variant="danger"
       @ok="editTransaction"
       @cancel="daleteTransaction"
-      button-size="sm"
       body-class="modal-body"
       :ok-disabled="!isFormValid"
     >
@@ -93,7 +92,7 @@ export default {
         { value: "GBP", text: "GBP" },
         { value: "EUR", text: "EUR" },
       ],
-      date: new Date(this.transaction.DateTime).toUTCString(),
+      date: this.transaction.DateTime.split("T")[0],
       time:
         new Date(this.transaction.DateTime).getHours() +
         ":" +
@@ -134,7 +133,6 @@ export default {
           if (res.status !== 200) {
             throw "err";
           }
-          console.log(res);
           console.log("updated");
         })
         .catch((err) => {

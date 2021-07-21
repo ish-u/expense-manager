@@ -71,7 +71,6 @@ router.post("/saveExpense", authenticateToken, async (req, res) => {
 
 // update the Expense Doucment
 router.post("/updateExpense/:id", authenticateToken, async (req, res) => {
-  console.log(req.body);
   const id = req.params.id;
   const username = req.user.username;
   const DateTime = new Date(req.body.date + " " + req.body.time);
@@ -92,7 +91,6 @@ router.post("/updateExpense/:id", authenticateToken, async (req, res) => {
 
   // updating the Expense Document
   await Expense.findByIdAndUpdate(id, { $set: updatedExpense }, (err, data) => {
-    console.log(err,data);
     if (err || data === null) {
       res.sendStatus(701);
     } else {

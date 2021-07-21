@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid>
-    <b-row class="justify-content-center mb-3" cols="12">
+  <b-container fluid class="p-3">
+    <b-row class="justify-content-center mb-5" cols="12">
       <h1 class="display-3">Transaction</h1>
     </b-row>
     <b-row>
@@ -32,14 +32,13 @@
         <b-table
           striped
           hover
-          primary-key="index"
-          :items="getItems()"
+          :items="getItems"
           :fields="fields"
           @row-clicked="editTransaction"
         ></b-table>
       </b-col>
     </b-row>
-
+    <!-- EditTransaction Component -->
     <EditTransaction :transaction="transaction" v-if="showEditTransaction" />
   </b-container>
 </template>
@@ -61,7 +60,7 @@ export default {
         { name: "Fuel", status: "not_accepted" },
         { name: "Other", status: "not_accepted" },
       ],
-      fields: ["#", "Currency", "Amount", "Category", "Date"],
+      fields: ["Currency", "Amount", "Category", "Date", "Time"],
       items: [],
       transaction: {},
       showEditTransaction: false,
@@ -84,35 +83,57 @@ export default {
         })
         .then((resJSON) => {
           this.items = resJSON;
+          this.items.reverse();
         })
         .catch((err) => {
           console.log(err);
         });
-    },
-    getItems() {
-      this.items.forEach((item, index) => {
-        item.Date = new Date(item.DateTime).toDateString();
-        item["#"] = index + 1;
-      });
-      return this.items;
     },
     editTransaction(item) {
       this.transaction = item;
       this.showEditTransaction = true;
     },
   },
+  computed: {
+    getItems: function () {
+      this.items.forEach((item) => {
+        item.Date = new Date(item.DateTime).toDateString();
+        item.Time = new Date(item.DateTime).toLocaleTimeString();
+      });
+      const sortByCategories = this.getSortByCategories;
+      if (sortByCategories.length !== 0) {
+        return this.items.filter(
+          (item) => sortByCategories.includes(item.Category) === true
+        );
+      }
+      return this.items;
+    },
+    getSortByCategories: function () {
+      var categories = [];
+      this.categories.forEach((category) => {
+        if (category.status === "accepted") {
+          categories.push(category.name);
+        }
+      });
+      console.log(categories);
+      return categories;
+    },
+  },
   mounted() {
     this.getTransactions();
     this.$root.$on("bv::modal::hide", (bvEvent, modalId) => {
-      console.log(bvEvent);
+      this.getTransactions();
       if (bvEvent.type === "hide" && modalId === "edit-transaction-modal") {
         this.showEditTransaction = false;
         this.transaction = {};
       }
-      this.getTransactions();
     });
   },
 };
 </script>
 
-<style></style>
+<style>
+tbody:hover {
+  cursor: pointer;
+}
+</style>
