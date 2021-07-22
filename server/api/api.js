@@ -1,7 +1,7 @@
-import axios from "axios";
 import jwt from "jsonwebtoken";
 import express from "express";
 import Expense from "../model/expense.js";
+import { getExchangeRates, currencySymbol } from "../currency.js";
 
 // Express Router
 const router = express.Router();
@@ -25,9 +25,39 @@ const authenticateToken = (req, res, next) => {
 };
 
 // index route
-router.get("/", authenticateToken, (req, res) => {
-  res.send({ user: req.user });
-});
+router.get(
+  "/dashboard/:reqCurrnecySymbol",
+  authenticateToken,
+  async (req, res) => {
+    // returning the total amount spent and the latest 5 Transaction
+    await Expense.find(
+      { username: req.user.username },
+      async (err, transactions) => {
+        if (err) {
+          res.sendStatus(701);
+        } else {
+          let total = 0;
+          const reqCurrnecySymbol = req.params.reqCurrnecySymbol;
+          const exchangeRates = await getExchangeRates();
+          if (
+            transactions !== null &&
+            exchangeRates[reqCurrnecySymbol] !== undefined
+          ) {
+            transactions.forEach((transaction) => {
+              total += transaction.Amount / exchangeRates[transaction.Currency];
+            });
+            total *= exchangeRates[reqCurrnecySymbol];
+          }
+          res.send({
+            transactions: transactions,
+            total: total,
+            currencySymbol: currencySymbol,
+          });
+        }
+      }
+    );
+  }
+);
 
 // get Expense Documents
 router.get("/getExpense", authenticateToken, async (req, res) => {

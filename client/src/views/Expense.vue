@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="p-3">
     <b-row class="justify-content-center mb-5" cols="12">
-      <h1 class="display-3">Transaction</h1>
+      <h1 class="display-4">Transaction</h1>
     </b-row>
     <b-row>
       <b-col xl="3" lg="3" md="4" sm="12">
@@ -132,7 +132,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 tbody:hover {
   cursor: pointer;
 }
