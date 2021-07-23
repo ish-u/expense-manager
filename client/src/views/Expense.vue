@@ -67,14 +67,14 @@ export default {
     };
   },
   methods: {
-    getTransactions() {
+    async getTransactions() {
       const requestOptions = {
         method: "GET",
         headers: {
           authorization: "Bearer " + localStorage.getItem("accessToken"),
         },
       };
-      fetch(`${process.env.VUE_APP_API}/getExpense`, requestOptions)
+      await fetch(`${process.env.VUE_APP_API}/getExpense`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";
@@ -115,17 +115,18 @@ export default {
           categories.push(category.name);
         }
       });
-      console.log(categories);
       return categories;
     },
   },
-  mounted() {
+  created() {
     this.getTransactions();
     this.$root.$on("bv::modal::hide", (bvEvent, modalId) => {
+      console.log(bvEvent, modalId);
       this.getTransactions();
       if (bvEvent.type === "hide" && modalId === "edit-transaction-modal") {
         this.showEditTransaction = false;
         this.transaction = {};
+        this.getTransactions();
       }
     });
   },

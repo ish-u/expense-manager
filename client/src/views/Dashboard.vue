@@ -1,26 +1,37 @@
 <template>
-  <b-container fluid class="text-center">
-    <b-row class="w-100 text-center justify-content-center mb-5">
-      <h1 class="display-4">Dashboard</h1>
+  <b-container class="text-center">
+    <b-row class="justify-content-center mb-3">
+      <TotalAmount
+        :currencySymbols="currencySymbols"
+        :totalAmount="totalAmount"
+        :exchangeRates="exchangeRates"
+      />
     </b-row>
     <b-row>
-      <b-col xl="3" lg="3" md="4" sm="12">
-        <h2>Money Spent : INR {{ total }}</h2>
-      </b-col>
-      <b-col>
+      <span class="w-100">
+        <h3>Latest Transaction:</h3>
+        <hr />
+      </span>
+      <b-container class="latest-transaction-table">
         <b-table striped :items="getTransactions" :fields="fields"></b-table>
-      </b-col>
+      </b-container>
     </b-row>
   </b-container>
 </template>
 
 <script>
+import TotalAmount from "../components/TotalAmount.vue";
 export default {
   name: "Dashboard",
+  components: {
+    TotalAmount,
+  },
   data() {
     return {
-      total: 0,
+      totalAmount: 0,
       transactions: [],
+      currencySymbols: [],
+      exchangeRates: {},
       fields: ["Currency", "Amount", "Category", "Date", "Time"],
     };
   },
@@ -40,8 +51,11 @@ export default {
           return res.json();
         })
         .then((resJSON) => {
-          this.total = resJSON.total;
+          this.totalAmount = resJSON.totalAmount;
           this.transactions = resJSON.transactions;
+          this.transactions.length = 5;
+          this.currencySymbols = resJSON.currencySymbols;
+          this.exchangeRates = resJSON.exchangeRates;
         })
         .catch((err) => {
           console.log(err);
@@ -62,3 +76,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.latest-transaction-table {
+  overflow: scroll;
+}
+.latest-transaction-table::-webkit-scrollbar {
+  display: none;
+}
+</style>

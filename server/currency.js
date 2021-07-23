@@ -769,7 +769,19 @@ const currencyList = {
     id: "ZWL",
   },
 };
-const currencySymbol = Object.keys(currencyList);
+// get the Currency ID and Symbol
+const getCurrencySymbols = () => {
+  let currencySymbol = [];
+  for (let key of Object.keys(currencyList)) {
+    currencySymbol.push({
+      ID: currencyList[key].id,
+      Symbol: currencyList[key].currencySymbol || null,
+    });
+  }
+  return currencySymbol;
+};
+
+// get the Currency Exchange Rates
 const getExchangeRates = async (symbol) => {
   return await axios
     .get(
@@ -780,4 +792,4 @@ const getExchangeRates = async (symbol) => {
     })
     .catch((err) => console.log(err));
 };
-export { currencySymbol, getExchangeRates };
+export { getCurrencySymbols, getExchangeRates };
