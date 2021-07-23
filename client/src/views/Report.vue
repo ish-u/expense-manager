@@ -1,12 +1,92 @@
 <template>
-  <div>
-    <h1>Report</h1>
-  </div>
+  <b-container class="text-center">
+    <b-row class="justify-content-center" cols="12">
+      <h6>(Currency : USD $)</h6>
+    </b-row>
+    <template>
+      <b-container v-if="!loading">
+        <CategoryChart
+          :options="getCategoryOptions"
+          :series="getCategorySeries"
+          :range="range"
+        />
+        <WeekChart
+          :optionsCategories="getWeekOptions"
+          :seriesData="getWeekSeries"
+          :range="range"
+        />
+      </b-container>
+    </template>
+  </b-container>
 </template>
 
 <script>
+import CategoryChart from "../components/CategoryChart.vue";
+import WeekChart from "../components/WeekChart.vue";
 export default {
   name: "Report",
+  components: {
+    CategoryChart,
+    WeekChart,
+  },
+  data: function () {
+    return {
+      loading: true,
+      categoryMoney: {},
+      weekMoney: {},
+      range: [],
+    };
+  },
+  methods: {
+    async getReport() {
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          authorization: "Bearer " + localStorage.getItem("accessToken"),
+        },
+      };
+      await fetch(`${process.env.VUE_APP_API}/getReport`, requestOptions)
+        .then((res) => {
+          if (res.status !== 200) {
+            throw "err";
+          }
+          return res.json();
+        })
+        .then((resJSON) => {
+          console.log(resJSON);
+          const { categoryMoney, weekMoney, range } = resJSON;
+          this.categoryMoney = categoryMoney;
+          this.weekMoney = weekMoney;
+          this.range = range;
+          this.loading = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  computed: {
+    getCategorySeries: function () {
+      return Object.values(this.categoryMoney);
+    },
+    getCategoryOptions: function () {
+      const options = {};
+      options.labels = [];
+      Object.keys(this.categoryMoney).forEach((e) => options.labels.push(e));
+      return options;
+    },
+    getWeekSeries: function () {
+      return Object.values(this.weekMoney);
+    },
+    getWeekOptions: function () {
+      const toReturn = [];
+      Object.keys(this.weekMoney).forEach((e) => toReturn.push(e));
+      return toReturn;
+    },
+  },
+  mounted() {
+    this.getReport();
+  },
 };
 </script>
 

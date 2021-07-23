@@ -103,7 +103,7 @@ export default {
     };
   },
   methods: {
-    addTransaction() {
+    async addTransaction() {
       const requestOptions = {
         method: "POST",
         headers: {
@@ -119,7 +119,7 @@ export default {
           Description: this.description,
         }),
       };
-      fetch(`${process.env.VUE_APP_API}/saveExpense`, requestOptions)
+      await fetch(`${process.env.VUE_APP_API}/saveExpense`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";

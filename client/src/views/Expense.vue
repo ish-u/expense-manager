@@ -1,8 +1,5 @@
 <template>
   <b-container fluid class="p-3">
-    <b-row class="justify-content-center mb-5" cols="12">
-      <h1 class="display-4">Transaction</h1>
-    </b-row>
     <b-row>
       <b-col xl="3" lg="3" md="4" sm="12">
         <b-container>
@@ -120,13 +117,13 @@ export default {
   },
   created() {
     this.getTransactions();
-    this.$root.$on("bv::modal::hide", (bvEvent, modalId) => {
+    this.$root.$on("bv::modal::hide", async (bvEvent, modalId) => {
       console.log(bvEvent, modalId);
-      this.getTransactions();
+      await this.getTransactions();
       if (bvEvent.type === "hide" && modalId === "edit-transaction-modal") {
         this.showEditTransaction = false;
         this.transaction = {};
-        this.getTransactions();
+        await this.getTransactions();
       }
     });
   },
