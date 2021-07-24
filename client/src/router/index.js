@@ -54,12 +54,12 @@ router.beforeEach((to, from, next) => {
   const publicPages = ["Sign In", "Sign Up"];
   const needAuth = !publicPages.includes(to.name);
   const isLoggedIn = store.getters.isLoggedIn;
-  console.log(isLoggedIn, needAuth);
   if (needAuth && !isLoggedIn) {
     next({ name: "Sign In" });
-  } else {
-    next();
+  } else if (!needAuth && isLoggedIn) {
+    next({ name: "Dashboard" });
   }
+  next();
 });
 
 export default router;

@@ -1,21 +1,26 @@
 <template>
   <b-container class="text-center">
-    <b-row class="justify-content-center" cols="12">
-      <h6>(Currency : USD $)</h6>
-    </b-row>
-    <template>
-      <b-container v-if="!loading">
-        <CategoryChart
-          :options="getCategoryOptions"
-          :series="getCategorySeries"
-          :range="range"
-        />
-        <WeekChart
-          :optionsCategories="getWeekOptions"
-          :seriesData="getWeekSeries"
-          :range="range"
-        />
-      </b-container>
+    <template v-if="loading">
+      <b-spinner type="grow" label="Loading..."></b-spinner>
+    </template>
+    <template v-else>
+      <b-row class="justify-content-center" cols="12">
+        <h6>(Currency : USD $)</h6>
+        <template>
+          <b-container v-if="!loading">
+            <CategoryChart
+              :options="getCategoryOptions"
+              :series="getCategorySeries"
+              :range="range"
+            />
+            <WeekChart
+              :optionsCategories="getWeekOptions"
+              :seriesData="getWeekSeries"
+              :range="range"
+            />
+          </b-container>
+        </template>
+      </b-row>
     </template>
   </b-container>
 </template>
@@ -53,7 +58,6 @@ export default {
           return res.json();
         })
         .then((resJSON) => {
-          console.log(resJSON);
           const { categoryMoney, weekMoney, range } = resJSON;
           this.categoryMoney = categoryMoney;
           this.weekMoney = weekMoney;

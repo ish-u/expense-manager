@@ -4,12 +4,12 @@
       id="edit-transaction-modal"
       ref="edit-transaction-modal"
       title="Edit Transaction"
-      title-class="modal-title"
       ok-title="Update"
       cancel-title="Delete"
       cancel-variant="danger"
       @ok="editTransaction"
       @cancel="daleteTransaction"
+      @hidden="hidden"
       body-class="modal-body"
       :ok-disabled="!isFormValid"
     >
@@ -159,6 +159,9 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    hidden() {
+      this.$emit("hidden");
     },
   },
   computed: {

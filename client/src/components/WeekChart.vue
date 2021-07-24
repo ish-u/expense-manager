@@ -10,13 +10,7 @@
         </em>
       </span>
     </b-col>
-    <b-col
-      xl="6"
-      lg="6"
-      md="12"
-      sm="12"
-      class="d-flex justify-content-center align-items-center"
-    >
+    <b-col xl="6" lg="6" md="12" sm="12" class="chart">
       <apexchart
         width="500"
         type="bar"
@@ -59,4 +53,19 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.chart {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  overflow: scroll;
+}
+.chart::-webkit-scrollbar {
+  display: none;
+}
+@media only screen and (max-width: 576px) {
+  .chart {
+    justify-content: unset !important;
+  }
+}
+</style>

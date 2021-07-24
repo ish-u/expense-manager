@@ -10,6 +10,7 @@
       title-class="modal-title"
       ok-title="Add"
       @ok="addTransaction"
+      @hidden="hidden"
       button-size="sm"
       body-class="modal-body"
       :ok-disabled="!isFormValid"
@@ -124,11 +125,13 @@ export default {
           if (res.status !== 200) {
             throw "err";
           }
-          console.log("saved");
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+    hidden() {
+      this.$emit("hidden");
     },
   },
   computed: {

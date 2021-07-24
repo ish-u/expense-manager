@@ -1,21 +1,36 @@
 <template>
   <b-container class="text-center">
-    <b-row class="justify-content-center mb-3">
-      <TotalAmount
-        :currencySymbols="currencySymbols"
-        :totalAmount="totalAmount"
-        :exchangeRates="exchangeRates"
-      />
-    </b-row>
-    <b-row>
-      <span class="w-100">
-        <h3>Latest Transaction:</h3>
-        <hr />
-      </span>
-      <b-container class="latest-transaction-table">
-        <b-table striped :items="getTransactions" :fields="fields"></b-table>
-      </b-container>
-    </b-row>
+    <template v-if="loading">
+      <b-spinner type="grow" label="Loading..."></b-spinner>
+    </template>
+    <template v-else>
+      <b-row>
+        <TotalAmount
+          :currencySymbols="currencySymbols"
+          :totalAmount="totalAmount"
+          :exchangeRates="exchangeRates"
+        />
+      </b-row>
+      <b-row>
+        <span class="w-100">
+          <h5>Latest Transactions:</h5>
+          <hr />
+        </span>
+        <b-container class="latest-transaction-table">
+          <b-table
+            responsive
+            striped
+            :items="getTransactions"
+            :fields="fields"
+          ></b-table>
+        </b-container>
+      </b-row>
+      <b-row class="d-flex justify-content-center">
+        <b-button @click="$router.push({ name: 'Expense' })">
+          See All
+        </b-button>
+      </b-row>
+    </template>
   </b-container>
 </template>
 
@@ -28,6 +43,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       totalAmount: 0,
       transactions: [],
       currencySymbols: [],
@@ -36,14 +52,14 @@ export default {
     };
   },
   methods: {
-    getDashboardData() {
+    async getDashboardData() {
       const requestOptions = {
         method: "GET",
         headers: {
           authorization: "Bearer " + localStorage.getItem("accessToken"),
         },
       };
-      fetch(`${process.env.VUE_APP_API}/dashboard/INR`, requestOptions)
+      await fetch(`${process.env.VUE_APP_API}/dashboard/INR`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";
@@ -56,6 +72,7 @@ export default {
           this.transactions.length = 5;
           this.currencySymbols = resJSON.currencySymbols;
           this.exchangeRates = resJSON.exchangeRates;
+          this.loading = false;
         })
         .catch((err) => {
           console.log(err);
@@ -76,12 +93,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.latest-transaction-table {
-  overflow: scroll;
-}
-.latest-transaction-table::-webkit-scrollbar {
-  display: none;
-}
-</style>

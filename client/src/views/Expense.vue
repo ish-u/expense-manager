@@ -1,42 +1,64 @@
 <template>
-  <b-container fluid class="p-3">
-    <b-row>
-      <b-col xl="3" lg="3" md="4" sm="12">
-        <b-container>
-          <b-row class="mx-5 mb-3">
-            <AddTransaction />
-          </b-row>
-          <b-row class="mx-5 mt-1">
-            <b-container>
-              <b> Sort By:</b>
-            </b-container>
-          </b-row>
-          <b-row class="mx-5 mt-1">
-            <b-container v-for="category in categories" :key="category.name">
-              <b-form-checkbox
-                :name="category.name"
-                v-model="category.status"
-                value="accepted"
-                unchecked-value="not_accepted"
+  <b-container fluid class="p-3 text-center">
+    <template v-if="loading">
+      <b-spinner type="grow" label="Loading..."></b-spinner>
+    </template>
+    <template v-else>
+      <b-row>
+        <b-col xl="3" lg="3" md="12" sm="12">
+          <b-container class="d-flex flex-column align-items-center">
+            <b-row class="text-center">
+              <!-- Add Transactions Component -->
+              <AddTransaction v-on:hidden="getTransactions" />
+            </b-row>
+            <b-row class="sort-by-section mt-3">
+              <b-col cols="12">
+                <b> Sort By: </b>
+              </b-col>
+              <b-col
+                xl="12"
+                lg="12"
+                md="3"
+                sm="3"
+                xs="3"
+                class="mb-2"
+                v-for="category in categories"
+                :key="category.name"
               >
-                {{ category.name }}
-              </b-form-checkbox>
-            </b-container>
-          </b-row>
-        </b-container>
-      </b-col>
-      <b-col xl="9" lg="9" md="8" sm="12" class="text-center">
-        <b-table
-          striped
-          hover
-          :items="getItems"
-          :fields="fields"
-          @row-clicked="editTransaction"
-        ></b-table>
-      </b-col>
-    </b-row>
-    <!-- EditTransaction Component -->
-    <EditTransaction :transaction="transaction" v-if="showEditTransaction" />
+                <b-form-checkbox
+                  :name="category.name"
+                  v-model="category.status"
+                  value="accepted"
+                  unchecked-value="not_accepted"
+                  class="text-left"
+                >
+                  {{ category.name }}
+                </b-form-checkbox>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col xl="9" lg="9" md="12" sm="6" class="text-center">
+          <h2>Transactions</h2>
+          <br />
+          <b-table
+            striped
+            hover
+            responsive=""
+            :items="getItems"
+            :fields="fields"
+            @row-clicked="editTransaction"
+          ></b-table>
+        </b-col>
+      </b-row>
+
+      <!-- EditTransaction Component -->
+      <EditTransaction
+        v-if="showEditTransaction"
+        v-on:hidden="getTransactions"
+        :transaction="transaction"
+      />
+    </template>
   </b-container>
 </template>
 
@@ -51,6 +73,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       categories: [
         { name: "Home", status: "not_accepted" },
         { name: "Food", status: "not_accepted" },
@@ -65,6 +88,8 @@ export default {
   },
   methods: {
     async getTransactions() {
+      this.showEditTransaction = false;
+      this.transaction = {};
       const requestOptions = {
         method: "GET",
         headers: {
@@ -81,6 +106,7 @@ export default {
         .then((resJSON) => {
           this.items = resJSON;
           this.items.reverse();
+          this.loading = false;
         })
         .catch((err) => {
           console.log(err);
@@ -117,15 +143,6 @@ export default {
   },
   created() {
     this.getTransactions();
-    this.$root.$on("bv::modal::hide", async (bvEvent, modalId) => {
-      console.log(bvEvent, modalId);
-      await this.getTransactions();
-      if (bvEvent.type === "hide" && modalId === "edit-transaction-modal") {
-        this.showEditTransaction = false;
-        this.transaction = {};
-        await this.getTransactions();
-      }
-    });
   },
 };
 </script>
@@ -133,5 +150,14 @@ export default {
 <style scoped>
 tbody:hover {
   cursor: pointer;
+}
+.sort-by-section {
+  flex-direction: column;
+}
+
+@media (max-width: 786px) and (min-width: 576px) {
+  .sort-by-section {
+    flex-direction: row;
+  }
 }
 </style>
