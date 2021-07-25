@@ -109,6 +109,7 @@ export default {
     };
   },
   methods: {
+    // editing a transaction
     async editTransaction() {
       const requestOptions = {
         method: "POST",
@@ -139,6 +140,7 @@ export default {
           console.log(err);
         });
     },
+    // deleting a transaction
     daleteTransaction() {
       const requestOptions = {
         method: "GET",
@@ -161,10 +163,13 @@ export default {
         });
     },
     hidden() {
+      // emitting "hidden" event to parent on Modal becoming invisible
+      // refer BootStrap-Vue for B-Modal events
       this.$emit("hidden");
     },
   },
   computed: {
+    // checking form validity
     isFormValid() {
       return (
         this.currency !== "" &&
@@ -177,6 +182,7 @@ export default {
     },
   },
   mounted() {
+    // refer BootStrap-Vue for B-Modal events and methods
     this.$refs["edit-transaction-modal"].show();
   },
 };

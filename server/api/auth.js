@@ -42,7 +42,7 @@ router.post("/signup", async (req, res) => {
   const email = req.body.email;
 
   // checking if the user already exists
-  User.findOne({ username: username }, async (err, data) => {
+  await User.findOne({ username: username }, async (err, data) => {
     if (err || data !== null) {
       res.sendStatus(701);
     } else {

@@ -7,10 +7,12 @@
       <b-row>
         <b-col xl="3" lg="3" md="12" sm="12">
           <b-container class="d-flex flex-column align-items-center">
+            <!-- Add Transactions Component -->
             <b-row class="text-center">
-              <!-- Add Transactions Component -->
               <AddTransaction v-on:hidden="getTransactions" />
             </b-row>
+
+            <!-- Sort By Category Section -->
             <b-row class="sort-by-section mt-3">
               <b-col cols="12">
                 <b> Sort By: </b>
@@ -38,6 +40,8 @@
             </b-row>
           </b-container>
         </b-col>
+
+        <!-- Transactions List -->
         <b-col xl="9" lg="9" md="12" sm="6" class="text-center">
           <h2>Transactions</h2>
           <br />
@@ -87,6 +91,7 @@ export default {
     };
   },
   methods: {
+    // get the all Transactions
     async getTransactions() {
       this.showEditTransaction = false;
       this.transaction = {};
@@ -118,6 +123,7 @@ export default {
     },
   },
   computed: {
+    // filtering the Table Data by Categories and adding Date, Time values
     getItems: function () {
       this.items.forEach((item) => {
         item.Date = new Date(item.DateTime).toDateString();
@@ -131,6 +137,7 @@ export default {
       }
       return this.items;
     },
+    // get the Selected Categories
     getSortByCategories: function () {
       var categories = [];
       this.categories.forEach((category) => {

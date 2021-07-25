@@ -3,11 +3,12 @@
     <template v-if="loading">
       <b-spinner type="grow" label="Loading..."></b-spinner>
     </template>
+    <!-- Content -->
     <template v-else>
       <b-row class="justify-content-center" cols="12">
         <h6>(Currency : USD $)</h6>
         <template>
-          <b-container v-if="!loading">
+          <b-container>
             <CategoryChart
               :options="getCategoryOptions"
               :series="getCategorySeries"
@@ -43,7 +44,9 @@ export default {
     };
   },
   methods: {
+    // get the Report about the Transactions that happend in the Current Month
     async getReport() {
+      this.loading = true;
       const requestOptions = {
         method: "GET",
         headers: {
@@ -70,6 +73,8 @@ export default {
     },
   },
   computed: {
+    // returns value corresponding to the Vue-ApexChart formats of Donut Chart and Bar Graph
+    // https://apexcharts.com/docs/vue-charts/
     getCategorySeries: function () {
       return Object.values(this.categoryMoney);
     },

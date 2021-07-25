@@ -31,11 +31,13 @@ export default {
   },
   data() {
     return {
+      // Default Currency
       currentCurrency: "INR",
       previousCurrency: "INR",
     };
   },
   methods: {
+    // returns currency options for the Select Element
     getCurrencyOptions() {
       let currencyOptions = [];
       this.currencySymbols.forEach((element) => {
@@ -46,6 +48,8 @@ export default {
       });
       return currencyOptions;
     },
+    // get the Current Currency
+    // ex : Symbol INR -> ₹
     getCurrencySymbol(ID) {
       let symbol;
       this.currencySymbols.forEach((element) => {
@@ -57,6 +61,7 @@ export default {
     },
   },
   computed: {
+    // Returning Total Amount based on "currentCurrency"
     getAmount() {
       const currentAmount =
         (this.totalAmount / this.exchangeRates[this.previousCurrency]) *

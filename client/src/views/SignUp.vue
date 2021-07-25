@@ -1,5 +1,5 @@
 <template>
-  <b-container class="text-center">
+  <b-container class="text-center mt-3">
     <span class="display-1">Sign Up</span>
     <b-container class="pt-5">
       <b-form @submit.prevent="signup" class="signup-form">
@@ -45,7 +45,7 @@
             pattern="^(?=.*[\d\W])(?=.*[a-z])(?=.*[A-Z]).{8,20}$"
           ></b-form-input>
           <b-form-text id="password-help-block" style="text-align: left">
-            <!-- Source -  https://blog.xenokore.com/a-safe-html5-password-regex/ -->
+            <!-- Source for Password Pattern -  https://blog.xenokore.com/a-safe-html5-password-regex/ -->
             <ul>
               <li>Must be 8-20 characters long</li>
               <li>Must have 1 Uppercase Letter</li>
@@ -104,9 +104,32 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .signup-form {
   margin: 0 auto;
-  width: 25vw;
+  width: 30vw;
+}
+
+@media (max-width: 576px) {
+  .signup-form {
+    width: 75vw;
+  }
+  .display-1 {
+    font-size: 4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .signup-form {
+    margin: 0 auto;
+    width: 50vw;
+  }
+}
+
+@media (min-width: 992px) {
+  .signup-form {
+    margin: 0 auto;
+    width: 30vw;
+  }
 }
 </style>

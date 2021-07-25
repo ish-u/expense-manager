@@ -4,6 +4,7 @@
       <b-spinner type="grow" label="Loading..."></b-spinner>
     </template>
     <template v-else>
+      <!-- TotalAmount component -->
       <b-row>
         <TotalAmount
           :currencySymbols="currencySymbols"
@@ -11,6 +12,8 @@
           :exchangeRates="exchangeRates"
         />
       </b-row>
+
+      <!-- Latest 5 Transactions -->
       <b-row>
         <span class="w-100">
           <h5>Latest Transactions:</h5>
@@ -25,6 +28,8 @@
           ></b-table>
         </b-container>
       </b-row>
+
+      <!-- Go To Expense View -->
       <b-row class="d-flex justify-content-center">
         <b-button @click="$router.push({ name: 'Expense' })">
           See All
@@ -52,6 +57,7 @@ export default {
     };
   },
   methods: {
+    // getting the Dashboard Data - Total Amount Spent, Latest 5 Transactions
     async getDashboardData() {
       const requestOptions = {
         method: "GET",
@@ -80,6 +86,7 @@ export default {
     },
   },
   computed: {
+    // adding the Date, Time key to 'transaction' objects of 'transactions' array
     getTransactions: function () {
       this.transactions.forEach((transaction) => {
         transaction.Date = new Date(transaction.DateTime).toDateString();

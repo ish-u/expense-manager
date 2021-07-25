@@ -104,6 +104,7 @@ export default {
     };
   },
   methods: {
+    // adding the Transaction
     async addTransaction() {
       const requestOptions = {
         method: "POST",
@@ -131,10 +132,13 @@ export default {
         });
     },
     hidden() {
+      // emitting "hidden" event to parent on Modal becoming invisible
+      // refer BootStrap-Vue for B-Modal events
       this.$emit("hidden");
     },
   },
   computed: {
+    // checking form validity
     isFormValid() {
       return (
         this.currency !== "" &&

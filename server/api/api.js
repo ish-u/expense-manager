@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import express from "express";
 import Expense from "../model/expense.js";
 import { getExchangeRates, getCurrencySymbols } from "../currency.js";
+import datefns from "date-fns";
 
 // Express Router
 const router = express.Router();
@@ -24,11 +25,12 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-// index route
+// dashboard route
 router.get(
   "/dashboard/:reqCurrnecySymbol",
   authenticateToken,
   async (req, res) => {
+    const reqCurrnecySymbol = req.params.reqCurrnecySymbol;
     // returning the total amount spent and the latest 5 Transaction
     await Expense.find(
       { username: req.user.username },
@@ -37,7 +39,7 @@ router.get(
           res.sendStatus(701);
         } else {
           let totalAmount = 0;
-          const reqCurrnecySymbol = req.params.reqCurrnecySymbol;
+          // getting the Exchange rates
           const exchangeRates = await getExchangeRates();
           if (
             transactions !== null &&
@@ -145,10 +147,17 @@ router.get("/deleteExpense/:id", authenticateToken, async (req, res) => {
 
 // get the Report
 router.get("/getReport", authenticateToken, async (req, res) => {
+  // getting the starting and ending Dates, Week Number of Current Month
   const today = new Date();
   const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
   const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const exchangeRates = await getExchangeRates();
+  const startDateWeek = datefns.getISOWeek(startDate);
+  const endDateWeek = datefns.getISOWeek(endDate);
+
+  // refer to MongoDB and Mongoose aggregate and facet docs
+  // transactionByCategory - grouping the Documents by "Category"
+  // transactionByWeek - grouping the Documents by "Week Number of Year"
   await Expense.aggregate()
     .facet({
       transactionByCategory: [
@@ -183,7 +192,7 @@ router.get("/getReport", authenticateToken, async (req, res) => {
         {
           $group: {
             _id: {
-              week: { $week: "$DateTime" },
+              week: { $isoWeek: "$DateTime" },
             },
             transactions: {
               $push: "$$ROOT",
@@ -198,9 +207,11 @@ router.get("/getReport", authenticateToken, async (req, res) => {
       } else if (data == null) {
         res.sendStatus(202);
       }
+      // objects returend by MongoDB
       const { transactionByWeek, transactionByCategory } = data[0];
+
+      // creating the categoryMoney Object
       const categoryMoney = {};
-      const weekMoney = {};
       transactionByCategory.forEach((item) => {
         let total = 0;
         item.transactions.forEach((transaction) => {
@@ -208,6 +219,9 @@ router.get("/getReport", authenticateToken, async (req, res) => {
         });
         categoryMoney[item._id] = total;
       });
+
+      // creating the weekMoney Object
+      const weekMoney = {};
       transactionByWeek.forEach((item) => {
         let total = 0;
         item.transactions.forEach((transaction) => {
@@ -215,6 +229,12 @@ router.get("/getReport", authenticateToken, async (req, res) => {
         });
         weekMoney[item._id.week] = total.toFixed(2);
       });
+      for (var i = startDateWeek; i <= endDateWeek; i++) {
+        if (weekMoney[i] === undefined) {
+          weekMoney[i] = 0;
+        }
+      }
+
       res.send({
         categoryMoney,
         weekMoney,

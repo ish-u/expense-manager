@@ -1,5 +1,5 @@
 <template>
-  <b-container class="text-center">
+  <b-container class="text-center mt-3">
     <h1 class="display-1">Sign In</h1>
     <b-container class="pt-5">
       <b-form @submit.prevent="signin" class="signin-form">
@@ -44,6 +44,8 @@ export default {
   },
   methods: {
     signin() {
+      // dispatching the getAccessToken Action to obtain the Access Token
+      // for making furthur requests
       this.$store
         .dispatch("getAccessToken", {
           username: this.username,
@@ -61,9 +63,32 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .signin-form {
   margin: 0 auto;
-  width: 25vw;
+  width: 30vw;
+}
+
+@media (max-width: 576px) {
+  .signin-form {
+    width: 75vw;
+  }
+  .display-1 {
+    font-size: 5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .signin-form {
+    margin: 0 auto;
+    width: 50vw;
+  }
+}
+
+@media (min-width: 992px) {
+  .signin-form {
+    margin: 0 auto;
+    width: 30vw;
+  }
 }
 </style>
