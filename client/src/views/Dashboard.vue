@@ -58,14 +58,14 @@ export default {
   },
   methods: {
     // getting the Dashboard Data - Total Amount Spent, Latest 5 Transactions
-    async getDashboardData() {
+    getDashboardData() {
       const requestOptions = {
         method: "GET",
         headers: {
           authorization: "Bearer " + localStorage.getItem("accessToken"),
         },
       };
-      await fetch(`${process.env.VUE_APP_API}/dashboard/INR`, requestOptions)
+      fetch(`${process.env.VUE_APP_API}/dashboard/INR`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";

@@ -9,7 +9,6 @@
       cancel-variant="danger"
       @ok="editTransaction"
       @cancel="daleteTransaction"
-      @hidden="hidden"
       body-class="modal-body"
       :ok-disabled="!isFormValid"
     >
@@ -110,7 +109,7 @@ export default {
   },
   methods: {
     // editing a transaction
-    async editTransaction() {
+    editTransaction() {
       const requestOptions = {
         method: "POST",
         headers: {
@@ -119,14 +118,16 @@ export default {
         },
         body: JSON.stringify({
           date: this.date,
-          time: this.time,
+          time: new Date(this.date + " " + this.time)
+            .toISOString()
+            .split("T")[1],
           Amount: this.amount,
           Currency: this.currency,
           Category: this.category,
           Description: this.description,
         }),
       };
-      await fetch(
+      fetch(
         `${process.env.VUE_APP_API}/updateExpense/${this.id}`,
         requestOptions
       )
@@ -134,7 +135,7 @@ export default {
           if (res.status !== 200) {
             throw "err";
           }
-          console.log("updated");
+          this.update();
         })
         .catch((err) => {
           console.log(err);
@@ -156,16 +157,15 @@ export default {
           if (res.status !== 200) {
             throw "err";
           }
-          console.log("deleted");
+          this.update();
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    hidden() {
-      // emitting "hidden" event to parent on Modal becoming invisible
-      // refer BootStrap-Vue for B-Modal events
-      this.$emit("hidden");
+    update() {
+      // emitting "update" event to parent of Modal
+      this.$emit("update");
     },
   },
   computed: {

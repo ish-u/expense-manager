@@ -9,7 +9,7 @@
           <b-container class="d-flex flex-column align-items-center">
             <!-- Add Transactions Component -->
             <b-row class="text-center">
-              <AddTransaction v-on:hidden="getTransactions" />
+              <AddTransaction v-on:update="getTransactions" />
             </b-row>
 
             <!-- Sort By Category Section -->
@@ -45,7 +45,14 @@
         <b-col xl="9" lg="9" md="12" sm="6" class="text-center">
           <h2>Transactions</h2>
           <br />
+          <!-- Table Update Loading Spinner -->
+          <b-row class="d-flex justify-content-center" v-if="transactionUpdate">
+            <b-spinner type="grow" label="Loading..."></b-spinner>
+          </b-row>
+
           <b-table
+            class="transaction-table"
+            v-else
             striped
             hover
             responsive=""
@@ -59,7 +66,7 @@
       <!-- EditTransaction Component -->
       <EditTransaction
         v-if="showEditTransaction"
-        v-on:hidden="getTransactions"
+        v-on:update="getTransactions"
         :transaction="transaction"
       />
     </template>
@@ -78,6 +85,7 @@ export default {
   data() {
     return {
       loading: true,
+      transactionUpdate: true,
       categories: [
         { name: "Home", status: "not_accepted" },
         { name: "Food", status: "not_accepted" },
@@ -92,7 +100,8 @@ export default {
   },
   methods: {
     // get the all Transactions
-    async getTransactions() {
+    getTransactions() {
+      this.transactionUpdate = true;
       this.showEditTransaction = false;
       this.transaction = {};
       const requestOptions = {
@@ -101,7 +110,7 @@ export default {
           authorization: "Bearer " + localStorage.getItem("accessToken"),
         },
       };
-      await fetch(`${process.env.VUE_APP_API}/getExpense`, requestOptions)
+      fetch(`${process.env.VUE_APP_API}/getExpense`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";
@@ -112,6 +121,7 @@ export default {
           this.items = resJSON;
           this.items.reverse();
           this.loading = false;
+          this.transactionUpdate = false;
         })
         .catch((err) => {
           console.log(err);
@@ -155,7 +165,7 @@ export default {
 </script>
 
 <style scoped>
-tbody:hover {
+.transaction-table :hover {
   cursor: pointer;
 }
 .sort-by-section {

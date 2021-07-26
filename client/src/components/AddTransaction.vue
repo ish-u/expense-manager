@@ -10,7 +10,6 @@
       title-class="modal-title"
       ok-title="Add"
       @ok="addTransaction"
-      @hidden="hidden"
       button-size="sm"
       body-class="modal-body"
       :ok-disabled="!isFormValid"
@@ -105,7 +104,7 @@ export default {
   },
   methods: {
     // adding the Transaction
-    async addTransaction() {
+    addTransaction() {
       const requestOptions = {
         method: "POST",
         headers: {
@@ -114,27 +113,36 @@ export default {
         },
         body: JSON.stringify({
           date: this.date,
-          time: this.time,
+          time: new Date(this.date + " " + this.time)
+            .toISOString()
+            .split("T")[1],
           Amount: this.amount,
           Currency: this.currency,
           Category: this.category,
           Description: this.description,
         }),
       };
-      await fetch(`${process.env.VUE_APP_API}/saveExpense`, requestOptions)
+      fetch(`${process.env.VUE_APP_API}/saveExpense`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";
           }
+          // reseting form
+          this.currency = "";
+          this.amount = "";
+          this.date = "";
+          this.time = "";
+          this.category = "";
+          this.description = "";
+          this.update();
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    hidden() {
-      // emitting "hidden" event to parent on Modal becoming invisible
-      // refer BootStrap-Vue for B-Modal events
-      this.$emit("hidden");
+    update() {
+      // emitting "update" event to Parent
+      this.$emit("update");
     },
   },
   computed: {

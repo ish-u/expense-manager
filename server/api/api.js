@@ -32,40 +32,37 @@ router.get(
   async (req, res) => {
     const reqCurrnecySymbol = req.params.reqCurrnecySymbol;
     // returning the total amount spent and the latest 5 Transaction
-    await Expense.find(
-      { username: req.user.username },
-      async (err, transactions) => {
-        if (err) {
-          res.sendStatus(701);
-        } else {
-          let totalAmount = 0;
-          // getting the Exchange rates
-          const exchangeRates = await getExchangeRates();
-          if (
-            transactions !== null &&
-            exchangeRates[reqCurrnecySymbol] !== undefined
-          ) {
-            transactions.forEach((transaction) => {
-              totalAmount +=
-                transaction.Amount / exchangeRates[transaction.Currency];
-            });
-            totalAmount *= exchangeRates[reqCurrnecySymbol];
-          }
-          res.send({
-            transactions: transactions,
-            totalAmount: totalAmount,
-            currencySymbols: getCurrencySymbols(),
-            exchangeRates: exchangeRates,
+    Expense.find({ username: req.user.username }, async (err, transactions) => {
+      if (err) {
+        res.sendStatus(701);
+      } else {
+        let totalAmount = 0;
+        // getting the Exchange rates
+        const exchangeRates = await getExchangeRates();
+        if (
+          transactions !== null &&
+          exchangeRates[reqCurrnecySymbol] !== undefined
+        ) {
+          transactions.forEach((transaction) => {
+            totalAmount +=
+              transaction.Amount / exchangeRates[transaction.Currency];
           });
+          totalAmount *= exchangeRates[reqCurrnecySymbol];
         }
+        res.send({
+          transactions: transactions,
+          totalAmount: totalAmount,
+          currencySymbols: getCurrencySymbols(),
+          exchangeRates: exchangeRates,
+        });
       }
-    );
+    });
   }
 );
 
 // get Expense Documents
-router.get("/getExpense", authenticateToken, async (req, res) => {
-  await Expense.find({ username: req.user.username }, (err, expenses) => {
+router.get("/getExpense", authenticateToken, (req, res) => {
+  Expense.find({ username: req.user.username }, (err, expenses) => {
     if (err) {
       res.sendStatus(701);
     } else {
@@ -75,7 +72,7 @@ router.get("/getExpense", authenticateToken, async (req, res) => {
 });
 
 // save Expense Document
-router.post("/saveExpense", authenticateToken, async (req, res) => {
+router.post("/saveExpense", authenticateToken, (req, res) => {
   const username = req.user.username;
   const DateTime = new Date(req.body.date + " " + req.body.time);
   const Amount = req.body.Amount;
@@ -94,7 +91,7 @@ router.post("/saveExpense", authenticateToken, async (req, res) => {
   });
 
   // saving the Expense Document
-  await expense.save((err, data) => {
+  expense.save((err, data) => {
     if (err || data === null) {
       res.sendStatus(701);
     } else {
@@ -104,7 +101,7 @@ router.post("/saveExpense", authenticateToken, async (req, res) => {
 });
 
 // update the Expense Doucment
-router.post("/updateExpense/:id", authenticateToken, async (req, res) => {
+router.post("/updateExpense/:id", authenticateToken, (req, res) => {
   const id = req.params.id;
   const username = req.user.username;
   const DateTime = new Date(req.body.date + " " + req.body.time);
@@ -124,7 +121,7 @@ router.post("/updateExpense/:id", authenticateToken, async (req, res) => {
   };
 
   // updating the Expense Document
-  await Expense.findByIdAndUpdate(id, { $set: updatedExpense }, (err, data) => {
+  Expense.findByIdAndUpdate(id, { $set: updatedExpense }, (err, data) => {
     if (err || data === null) {
       res.sendStatus(701);
     } else {
@@ -134,9 +131,9 @@ router.post("/updateExpense/:id", authenticateToken, async (req, res) => {
 });
 
 // delete Expense Document
-router.get("/deleteExpense/:id", authenticateToken, async (req, res) => {
+router.get("/deleteExpense/:id", authenticateToken, (req, res) => {
   const id = req.params.id;
-  await Expense.findByIdAndDelete(id, (err, data) => {
+  Expense.findByIdAndDelete(id, (err, data) => {
     if (err || data === null) {
       res.sendStatus(701);
     } else {
@@ -158,7 +155,7 @@ router.get("/getReport", authenticateToken, async (req, res) => {
   // refer to MongoDB and Mongoose aggregate and facet docs
   // transactionByCategory - grouping the Documents by "Category"
   // transactionByWeek - grouping the Documents by "Week Number of Year"
-  await Expense.aggregate()
+  Expense.aggregate()
     .facet({
       transactionByCategory: [
         {

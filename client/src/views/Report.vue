@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     // get the Report about the Transactions that happend in the Current Month
-    async getReport() {
+    getReport() {
       this.loading = true;
       const requestOptions = {
         method: "GET",
@@ -53,7 +53,7 @@ export default {
           authorization: "Bearer " + localStorage.getItem("accessToken"),
         },
       };
-      await fetch(`${process.env.VUE_APP_API}/getReport`, requestOptions)
+      fetch(`${process.env.VUE_APP_API}/getReport`, requestOptions)
         .then((res) => {
           if (res.status !== 200) {
             throw "err";
